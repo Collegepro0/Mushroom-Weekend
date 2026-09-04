@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rick's Weekend — Mushroom Festival &amp; the Shore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,100&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1e2a22; --paper:#f6f3ec; --paper-2:#ece7dc; --muted:#6b7269;
+    --city:#3a3f5c; --garden:#4d6b3f; --shore:#1f6f8b; --gold:#c9a24a;
+    --accent:var(--city);
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:16px;line-height:1.5}
+  h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:500;margin:0;letter-spacing:-.01em}
+  button{font:inherit;cursor:pointer}
+  a{color:inherit}
+
+  /* Hero */
+  .hero{padding:44px 20px 28px;max-width:760px;margin:0 auto}
+  .hero h1{font-size:clamp(32px,7vw,54px);max-width:20ch;line-height:1.02;font-variation-settings:"SOFT" 100}
+  .hero p.lead{margin:14px 0 0;color:var(--muted);font-size:17px;max-width:52ch}
+  .count{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;align-items:flex-end}
+  .count .n{font-family:Fraunces,serif;font-size:40px;line-height:1;font-weight:400}
+  .count .u{font-size:12px;color:var(--muted);margin-left:5px}
+  .count .live{font-family:Fraunces,serif;font-size:26px;color:var(--accent)}
+
+  /* Tabs */
+  .tabs{position:sticky;top:0;z-index:5;background:var(--paper);padding:10px 20px;border-bottom:1px solid var(--paper-2)}
+  .tabs .in{max-width:760px;margin:0 auto;display:flex;gap:8px}
+  .tab{flex:1;border:1.5px solid var(--paper-2);background:transparent;border-radius:999px;padding:10px 6px;text-align:center;color:var(--muted);transition:background .2s,color .2s,border-color .2s}
+  .tab b{display:block;font-family:Fraunces,serif;font-weight:500;font-size:17px;color:var(--ink)}
+  .tab small{font-size:12px}
+  .tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tab[aria-selected="true"] b{color:#fff}
+  .tab:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+  /* Day */
+  .day{max-width:760px;margin:0 auto;padding:22px 20px 60px}
+  .day[hidden]{display:none}
+  .dayhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:6px}
+  .dayhead h2{font-size:28px}
+  .dayhead p{margin:4px 0 0;color:var(--muted);font-size:15px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 22px}
+  .btn{border:1.5px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:6px;text-decoration:none;transition:background .15s,color .15s}
+  .btn:hover{background:var(--ink);color:var(--paper)}
+  .btn.solid{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.solid:hover{filter:brightness(.92)}
+  .btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+  /* Timeline */
+  .tl{position:relative;padding-left:26px}
+  .tl::before{content:"";position:absolute;left:8px;top:8px;bottom:8px;width:2px;background:var(--paper-2)}
+  .stop{position:relative;margin-bottom:6px;border-radius:var(--r);transition:background .2s}
+  .stop::before{content:"";position:absolute;left:-23px;top:20px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2.5px solid var(--accent)}
+  .stop.now{background:#fff;box-shadow:0 8px 24px rgba(30,42,34,.08)}
+  .stop.now::before{background:var(--accent);box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 22%,transparent)}
+  .stop.past{opacity:.55}
+  .stop > button{width:100%;text-align:left;background:none;border:0;padding:14px 12px;display:grid;grid-template-columns:78px 1fr auto;gap:10px;align-items:start;color:inherit;border-radius:var(--r)}
+  .stop > button:focus-visible{outline:3px solid var(--gold)}
+  .t{font-weight:600;font-size:14px;padding-top:2px;color:var(--accent)}
+  .name{font-family:Fraunces,serif;font-size:19px;line-height:1.2}
+  .sub{color:var(--muted);font-size:14px;margin-top:3px}
+  .chev{color:var(--muted);transition:transform .2s;padding-top:4px}
+  .stop.open .chev{transform:rotate(180deg)}
+  .body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s ease}
+  .stop.open .body{grid-template-rows:1fr}
+  .body > div{overflow:hidden}
+  .detail{padding:0 12px 14px 100px;font-size:15px}
+  .detail p{margin:0 0 10px}
+  .who{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .who span{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--paper-2);color:var(--ink)}
+  .who span.rick{background:color-mix(in srgb,var(--gold) 35%,var(--paper-2))}
+  .acts{display:flex;gap:8px;flex-wrap:wrap}
+  .acts .btn{padding:6px 12px;font-size:13px}
+
+  .note{max-width:760px;margin:0 auto 60px;padding:0 20px;color:var(--muted);font-size:14px}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.25s}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+
+  @media (max-width:520px){
+    .stop > button{grid-template-columns:72px 1fr auto;padding:14px 8px}
+    .detail{padding-left:12px}
+    .t{font-size:12.5px;letter-spacing:-.01em}
+    .name{font-size:17px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media print{.tabs,.toolbar,.acts,.count,.toast{display:none}.day[hidden]{display:block}.body{grid-template-rows:1fr}.stop.past{opacity:1}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>Rick, Lori, Abi &amp; AJ go to the Mushroom Capital, and then the Shore</h1>
+  <p class="lead">September 11–13, 2026. Hosted by the RJB Clan. Tap any stop for details, directions, and a calendar add.</p>
+  <div class="count" id="count" aria-live="polite"></div>
+</header>
+
+<nav class="tabs" aria-label="Days">
+  <div class="in" role="tablist">
+    <button class="tab" role="tab" data-day="fri" aria-selected="true"><b>Friday</b><small>Philadelphia</small></button>
+    <button class="tab" role="tab" data-day="sat" aria-selected="false"><b>Saturday</b><small>Kennett → Shore</small></button>
+    <button class="tab" role="tab" data-day="sun" aria-selected="false"><b>Sunday</b><small>Stone Harbor</small></button>
+  </div>
+</nav>
+
+<main id="days"></main>
+
+<p class="note" id="note">Saturday travels light: one night at the Union League, then bags ride along to Stone Harbor. Comfortable shoes for the festival, something a step up for the Barefoot Ball and the Whitebrier.</p>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------- Data ----------
+const P = {ron:"Ron",colleen:"Colleen",rick:"Rick",lori:"Lori",abi:"Abi",aj:"AJ",mike:"Mike",amber:"Amber",brendan:"Brendan",sean:"Sean",madeleine:"Madeleine",ryan:"Ryan"};
+const guests = ["rick","lori","abi","aj"];
+const DAYS = [
+ {id:"fri", color:"#3a3f5c", title:"Friday, September 11", sub:"Philadelphia", date:"2026-09-11", stops:[
+  {t:"2:39 PM", name:"Delta 2679 lands at PHL", sub:"Ron picks up at arrivals", who:["ron","rick","lori","abi","aj"], detail:"Terminal per Delta's app. Ron will be at the curb — text when you have bags. About 25 minutes to Center City.", map:"Philadelphia International Airport", dur:45},
+  {t:"3:30 PM", name:"Union League check-in", sub:"140 S. Broad Street", who:["rick","lori","abi","aj"], detail:"One night here. Drop bags and settle in — the club is a quick walk to Rittenhouse Square and Broad Street.", map:"The Union League of Philadelphia, 140 S Broad St, Philadelphia, PA", web:"https://www.unionleague.org", dur:30},
+  {t:"4:00 PM", name:"Hosted tour of the Union League", sub:"About an hour", who:["ron","rick","lori","abi","aj"], detail:"A club host walks us through the building — Lincoln Hall, the library, the art collection, and a lot of Philadelphia history.", map:"The Union League of Philadelphia, 140 S Broad St, Philadelphia, PA", dur:60},
+  {t:"5:00 PM", name:"Free time", sub:"Bar, Rittenhouse Square, Broad Street", who:["rick","lori","abi","aj"], detail:"Unwind before dinner. The Union League bar is right there; Rittenhouse Square is a ten-minute walk west.", map:"Rittenhouse Square, Philadelphia, PA", dur:90},
+  {t:"6:30 PM", name:"Dinner on the Union League rooftop", sub:"Reserved", who:["ron","colleen","rick","lori","abi","aj"], detail:"Rooftop dinner above Broad Street. No need to go anywhere after — you're already home.", map:"The Union League of Philadelphia, 140 S Broad St, Philadelphia, PA", web:"https://www.unionleague.org", dur:120},
+ ]},
+ {id:"sat", color:"#4d6b3f", title:"Saturday, September 12", sub:"Kennett Square, Malvern, then the Shore", date:"2026-09-12", stops:[
+  {t:"7:00 AM", name:"Ron picks up at the Union League", sub:"Checked out, bags in the car", who:["ron","rick","lori","abi","aj"], detail:"Early start — everything for the shore comes along now. Coffee in the car.", map:"The Union League of Philadelphia, 140 S Broad St, Philadelphia, PA", dur:50},
+  {t:"7:50 AM", name:"AJ to Applebrook Golf Club", sub:"8:40 tee with Brendan, Sean & Ryan", who:["aj","brendan","sean","ryan"], detail:"Gil Hanse design in Malvern. Foursome: AJ, Brendan, Sean, Ryan. Finishing around 1:00, straight into lunch at the club.", map:"Applebrook Golf Club, 100 Line Rd, Malvern, PA", web:"https://www.applebrookgolfclub.com", dur:300},
+  {t:"8:00 AM", name:"Malvern — Lori & Abi join Colleen", sub:"Coffee at the house for Ron & Rick", who:["colleen","lori","abi","ron","rick"], detail:"Quick stop at the Bacskai house. Lori and Abi head to Longwood with Colleen; Ron and Rick head to Kennett Square with Mike.", map:"Malvern, PA", dur:60},
+  {t:"10:00 AM", name:"Longwood Gardens", sub:"Colleen, Lori & Abi — timed entry", who:["colleen","lori","abi"], detail:"One of the great gardens in the country: conservatory, meadow, and the fountain garden. About two hours before heading to Applebrook.", map:"Longwood Gardens, 1001 Longwood Rd, Kennett Square, PA", web:"https://longwoodgardens.org", dur:110},
+  {t:"10:00 AM", name:"Kennett Square Mushroom Festival", sub:"Ron, Rick & Mike", who:["ron","rick","mike"], detail:"Kennett grows about two-thirds of America's mushrooms, and this is its 41st festival. The plan: the 9/11 antique fire truck tribute at opening, the Mushroom Growers Exhibit (spore to harvest), the Culinary Stage, and a cup of the official mushroom soup on Broad Street. Park at Kennett High School, 100 E South St.", map:"Kennett High School, 100 E South St, Kennett Square, PA", web:"https://mushroomfestival.org", dur:105},
+  {t:"11:50 AM", name:"Everyone to Applebrook", sub:"~35 min from Kennett, ~25 from Longwood", who:["ron","rick","mike","colleen","lori","abi"], detail:"Both groups leave by 11:50 to make the 12:30 table.", map:"Applebrook Golf Club, 100 Line Rd, Malvern, PA", dur:40},
+  {t:"12:30 PM", name:"Lunch at Applebrook", sub:"Table for 12", who:["ron","colleen","rick","lori","aj","abi","mike","amber","sean","brendan","madeleine","ryan"], detail:"The whole crew: Ron & Colleen, Rick & Lori, AJ & Abi, Mike & Amber, Sean, Brendan, Madeleine & Ryan. Golfers walk in off the 18th.", map:"Applebrook Golf Club, 100 Line Rd, Malvern, PA", web:"https://www.applebrookgolfclub.com", dur:105},
+  {t:"2:15 PM", name:"Depart for the Shore", sub:"Two cars — Ron & Colleen driving", who:["ron","colleen","rick","lori","abi","aj"], detail:"About two hours to Stone Harbor. Leave no later than 2:30 to keep the evening relaxed.", map:"Stone Harbor, NJ", dur:120},
+  {t:"4:15 PM", name:"Arrive Stone Harbor", sub:"Settle in, change for the evening", who:["ron","colleen","rick","lori","abi","aj"], detail:"Bags in, quick reset. Beach is a block away if anyone wants sand between their toes before the ball.", map:"Stone Harbor, NJ", dur:90},
+  {t:"6:00 PM", name:"Helen Diller Foundation Barefoot Ball", sub:"ICONA Avalon / The Windrift", who:["ron","colleen","rick","lori","abi","aj"], detail:"Beachfront fundraiser at the Windrift, 7849 Dune Drive, Avalon. Shore-elegant dress — it's called the Barefoot Ball for a reason.", map:"ICONA Avalon, 7849 Dune Dr, Avalon, NJ", web:"https://www.iconaresorts.com", dur:150},
+  {t:"8:30 PM", name:"Dinner at The Whitebrier", sub:"21st Street, Avalon", who:["ron","colleen","rick","lori","abi","aj"], detail:"Avalon institution in the old Motorboat Club building — sushi, seafood, crab cakes, and one of the biggest outdoor dining areas on the island. A mile from the Windrift.", map:"The Whitebrier, 260 20th St, Avalon, NJ", web:"https://www.whitebrier.com", dur:120},
+  {t:"Late", name:"Cocktails & live music", sub:"Stay put at the Whitebrier or walk it", who:["ron","colleen","rick","lori","abi","aj"], detail:"The Whitebrier turns into the party after dinner — live band on weekends. The Princeton is a few blocks away if the crowd wants a change of scene.", map:"The Whitebrier, 260 20th St, Avalon, NJ", dur:120, skipCal:true},
+ ]},
+ {id:"sun", color:"#1f6f8b", title:"Sunday, September 13", sub:"Stone Harbor, then home", date:"2026-09-13", stops:[
+  {t:"Morning", name:"Easy shore morning", sub:"Beach walk, coffee in town", who:["ron","colleen","rick","lori","abi","aj"], detail:"No alarm. Coffee on 96th Street, a walk on the beach, whatever the morning wants to be.", map:"96th Street, Stone Harbor, NJ", dur:120, skipCal:true},
+  {t:"11:00 AM", name:"Brunch in Stone Harbor / Avalon", sub:"", who:["ron","colleen","rick","lori","abi","aj"], detail:"Long brunch in town. Nothing on the clock until mid-afternoon.", map:"Stone Harbor, NJ", dur:90},
+  {t:"Afternoon", name:"Beach or bay, then pack up", sub:"", who:["rick","lori","abi","aj"], detail:"A couple of quiet hours. Bags by the door by 3:30.", map:"Stone Harbor, NJ", dur:120, skipCal:true},
+  {t:"3:45 PM", name:"Depart Stone Harbor for PHL", sub:"About 1 hr 50", who:["ron","rick","lori","abi","aj"], detail:"Ron drives. Parkway to the AC Expressway to 295 — arriving PHL around 5:35.", map:"Philadelphia International Airport", dur:110},
+  {t:"6:59 PM", name:"Delta 2594 departs to MSP", sub:"Safe travels", who:["rick","lori","abi","aj"], detail:"Thanks for coming east. Bring the mushrooms home.", map:"Philadelphia International Airport", dur:180},
+ ]},
+];
+
+// ---------- Helpers ----------
+const $ = s=>document.querySelector(s);
+const esc = s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function parseTime(day, t){
+  const m = t.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if(!m) return null;
+  let h=+m[1], mi=+m[2]; if(/PM/i.test(m[3])&&h<12)h+=12; if(/AM/i.test(m[3])&&h===12)h=0;
+  return new Date(`${day.date}T${String(h).padStart(2,"0")}:${String(mi).padStart(2,"0")}:00-04:00`);
+}
+function icsDate(d){return d.toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");}
+function makeIcs(events){
+  const lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//RJB Clan//Rick Weekend//EN"];
+  events.forEach((e,i)=>{
+    const s=e.start, en=new Date(s.getTime()+e.dur*60000);
+    lines.push("BEGIN:VEVENT",`UID:rickweekend-${i}-${s.getTime()}@rjb`,`DTSTAMP:${icsDate(new Date())}`,`DTSTART:${icsDate(s)}`,`DTEND:${icsDate(en)}`,`SUMMARY:${e.name}`,`LOCATION:${e.map||""}`,`DESCRIPTION:${(e.detail||"").replace(/\n/g," ")}`,"END:VEVENT");
+  });
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n");
+}
+function download(name, text){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([text],{type:"text/calendar"}));
+  a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+let toastT; function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2200);}
+function mapUrl(q){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);}
+
+// ---------- Render ----------
+const main=$("#days");
+DAYS.forEach((d,di)=>{
+  const sec=document.createElement("section");
+  sec.className="day"; sec.dataset.day=d.id; sec.hidden=di!==0; sec.style.setProperty("--accent",d.color);
+  sec.innerHTML=`
+    <div class="dayhead"><div><h2>${d.title}</h2><p>${d.sub}</p></div></div>
+    <div class="toolbar">
+      <button class="btn solid" data-cal="${d.id}">＋ Add day to calendar</button>
+      <button class="btn" data-expand="${d.id}">Expand all</button>
+      <button class="btn" data-guest="${d.id}" aria-pressed="false">Just our stops</button>
+    </div>
+    <div class="tl">${d.stops.map((s,si)=>`
+      <article class="stop" data-si="${si}" data-guest="${s.who.some(w=>guests.includes(w))}">
+        <button aria-expanded="false">
+          <span class="t">${esc(s.t)}</span>
+          <span><span class="name">${esc(s.name)}</span>${s.sub?`<div class="sub">${esc(s.sub)}</div>`:""}</span>
+          <span class="chev">▾</span>
+        </button>
+        <div class="body"><div><div class="detail">
+          <div class="who">${s.who.map(w=>`<span class="${guests.includes(w)?"rick":""}">${P[w]}</span>`).join("")}</div>
+          <p>${esc(s.detail)}</p>
+          <div class="acts">
+            <a class="btn" target="_blank" rel="noopener" href="${mapUrl(s.map)}">Directions</a>
+            ${s.web?`<a class="btn" target="_blank" rel="noopener" href="${s.web}">Website</a>`:""}
+            ${s.skipCal||!parseTime(d,s.t)?"":`<button class="btn" data-one="${d.id}:${si}">Add to calendar</button>`}
+          </div>
+        </div></div></div>
+      </article>`).join("")}</div>`;
+  main.appendChild(sec);
+});
+
+// ---------- Interactions ----------
+document.addEventListener("click",e=>{
+  const tab=e.target.closest(".tab");
+  if(tab){document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t===tab));
+    document.querySelectorAll(".day").forEach(s=>s.hidden=s.dataset.day!==tab.dataset.day);
+    document.documentElement.style.setProperty("--accent",DAYS.find(d=>d.id===tab.dataset.day).color);
+    window.scrollTo({top:$(".tabs").offsetTop,behavior:"smooth"}); return;}
+  const head=e.target.closest(".stop > button");
+  if(head){const st=head.parentElement;st.classList.toggle("open");head.setAttribute("aria-expanded",st.classList.contains("open"));return;}
+  const ex=e.target.closest("[data-expand]");
+  if(ex){const sec=ex.closest(".day");const all=[...sec.querySelectorAll(".stop")];const open=all.some(s=>!s.classList.contains("open"));
+    all.forEach(s=>{s.classList.toggle("open",open);s.querySelector("button").setAttribute("aria-expanded",open)});ex.textContent=open?"Collapse all":"Expand all";return;}
+  const g=e.target.closest("[data-guest]");
+  if(g&&g.tagName==="BUTTON"){const on=g.getAttribute("aria-pressed")!=="true";g.setAttribute("aria-pressed",on);g.textContent=on?"Show everything":"Just our stops";
+    g.closest(".day").querySelectorAll(".stop").forEach(s=>s.style.display=(on&&s.dataset.guest!=="true")?"none":"");return;}
+  const cal=e.target.closest("[data-cal]");
+  if(cal){const d=DAYS.find(x=>x.id===cal.dataset.cal);
+    const evs=d.stops.filter(s=>!s.skipCal&&parseTime(d,s.t)).map(s=>({...s,start:parseTime(d,s.t)}));
+    download(`rick-weekend-${d.id}.ics`,makeIcs(evs));toast(`${evs.length} events ready for your calendar`);return;}
+  const one=e.target.closest("[data-one]");
+  if(one){const [id,si]=one.dataset.one.split(":");const d=DAYS.find(x=>x.id===id);const s=d.stops[+si];
+    download(`${s.name.replace(/[^a-z0-9]+/gi,"-").toLowerCase()}.ics`,makeIcs([{...s,start:parseTime(d,s.t)}]));toast("Added — open the download to save it");return;}
+});
+
+// ---------- Countdown + live "now" ----------
+const kickoff=new Date("2026-09-11T14:39:00-04:00"), wrap=new Date("2026-09-13T18:59:00-04:00");
+function tick(){
+  const now=new Date(), c=$("#count");
+  if(now<kickoff){const s=Math.floor((kickoff-now)/1000);const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);
+    c.innerHTML=`<span><span class="n">${d}</span><span class="u">days</span></span><span><span class="n">${h}</span><span class="u">hrs</span></span><span><span class="n">${m}</span><span class="u">min</span></span><span class="u" style="margin-left:6px">until wheels down at PHL</span>`;}
+  else if(now<wrap){c.innerHTML=`<span class="live">It's happening.</span>`;}
+  else{c.innerHTML=`<span class="live">That was a good weekend.</span>`;}
+  // highlight current stop
+  let nowEl=null;
+  DAYS.forEach(d=>{const sec=document.querySelector(`.day[data-day="${d.id}"]`);
+    d.stops.forEach((s,i)=>{const el=sec.querySelector(`.stop[data-si="${i}"]`);const st=parseTime(d,s.t);el.classList.remove("now","past");
+      if(!st)return; const en=new Date(st.getTime()+s.dur*60000);
+      if(now>=st&&now<en){el.classList.add("now");nowEl=el;} else if(now>=en&&now<wrap){el.classList.add("past");}
+    });});
+}
+tick(); setInterval(tick,30000);
+// auto-open the right day once the weekend starts
+(function(){const now=new Date();const d=DAYS.find(x=>now.toISOString().slice(0,10)===x.date||new Date(x.date+"T23:59:00-04:00")>now&&new Date(x.date+"T00:00:00-04:00")<=now);
+  if(d&&now>=kickoff&&now<wrap){document.querySelector(`.tab[data-day="${d.id}"]`).click();}})();
+</script>
+</body>
+</html>
